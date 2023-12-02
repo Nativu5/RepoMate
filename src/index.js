@@ -18,9 +18,9 @@ export const router = OpenAPIRouter({
 		name_for_model: 'github_repository_access',
 		description_for_human: 'GitHub Repositories Search & Access plugin for ChatGPT.',
 		description_for_model:
-			'GitHub Repositories Search & Access plugin for ChatGPT. You can use this plugin to search and access GitHub repositories, including their READMEs, project structures and so on.',
+			'GitHub Repositories Search & Access Plugin for ChatGPT. You can use this plugin to search and access GitHub repositories, including their READMEs, project structures and so on.',
 		contact_email: 'root@naiv.fun',
-		legal_info_url: 'https://github.com/Nativu5/RepoMate/blob/main/LICENSE',
+		legal_info_url: 'https://github.com/Nativu5/RepoMate/blob/master/LICENSE',
 		logo_url: 'https://workers.cloudflare.com/resources/logo/logo.svg',
 	},
 });
