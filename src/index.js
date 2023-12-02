@@ -1,5 +1,5 @@
-import { GetTree } from './api/tree.js';
 import { GetSearch } from './api/search.js';
+import { GetRepoTree, GetRepoMeta } from './api/repo.js';
 import { GetContentSingle, GetContentBatch } from './api/content.js';
 
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi';
@@ -26,7 +26,8 @@ export const router = OpenAPIRouter({
 });
 
 // Define routes
-router.get('/api/tree', GetTree);
+router.get('/api/tree', GetRepoTree);
+router.get('/api/meta', GetRepoMeta);
 router.get('/api/search', GetSearch);
 router.get('/api/content/single', GetContentSingle);
 router.get('/api/content/batch', GetContentBatch);

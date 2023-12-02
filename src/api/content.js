@@ -3,7 +3,7 @@ import { WorkerHeaders } from './common';
 
 export class GetContentSingle extends OpenAPIRoute {
 	static schema = {
-		tags: ['ContentSingle'],
+		tags: ['Content'],
 		summary: 'Get content of a single file in the repository',
 		parameters: {
 			owner: Query(String, {
@@ -55,7 +55,7 @@ export class GetContentSingle extends OpenAPIRoute {
 
 export class GetContentBatch extends OpenAPIRoute {
 	static schema = {
-		tags: ['ContentBatch'],
+		tags: ['Content'],
 		summary: 'Get content of a batch of files in the repository',
 		parameters: {
 			owner: Query(String, {
