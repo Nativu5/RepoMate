@@ -13,7 +13,7 @@ export class GetContentSingle extends OpenAPIRoute {
 				description: 'name of the repository',
 			}),
 			branch: Query(String, {
-				description: 'branch name of the repository',
+				description: 'branch name of the repository; blank for default',
 				required: false,
 				default: '',
 			}),
@@ -65,7 +65,7 @@ export class GetContentBatch extends OpenAPIRoute {
 				description: 'name of the repository',
 			}),
 			branch: Query(String, {
-				description: 'branch name of the repository',
+				description: 'branch name of the repository; blank for default',
 				required: false,
 				default: '',
 			}),

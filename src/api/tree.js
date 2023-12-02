@@ -1,4 +1,5 @@
 import { OpenAPIRoute, Query } from '@cloudflare/itty-router-openapi';
+import { WorkerHeaders, GetDefaultBranch } from './common';
 
 export class GetTree extends OpenAPIRoute {
 	static schema = {
@@ -7,13 +8,15 @@ export class GetTree extends OpenAPIRoute {
 		parameters: {
 			owner: Query(String, {
 				description: 'owner of the repository',
+				default: 'Nativu5',
 			}),
 			repo: Query(String, {
 				description: 'name of the repository',
+				default: 'RepoMate',
 			}),
 			branch: Query(String, {
-				default: 'main',
-				description: 'branch name of the repository; optional, can be omitted',
+				description: 'branch name of the repository; if not specified, the default branch will be used',
+				required: false,
 			}),
 		},
 		responses: {
@@ -22,11 +25,7 @@ export class GetTree extends OpenAPIRoute {
 				schema: {
 					tree: [
 						{
-							path: '.github',
-							type: 'tree',
-						},
-						{
-							path: '.github/workflows',
+							path: 'src/index.js',
 							type: 'tree',
 						},
 					],
@@ -36,6 +35,15 @@ export class GetTree extends OpenAPIRoute {
 	};
 
 	async handle(request, env, ctx, data) {
+		// Get the default branch name if not specified
+		if (!data.query.branch) {
+			let ret = await GetDefaultBranch(data.query.owner, data.query.repo);
+			if (ret instanceof Response) {
+				return ret;
+			}
+			data.query.branch = ret;
+		}
+
 		const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/git/trees/${data.query.branch}?recursive=true`;
 
 		const resp = await fetch(url, {

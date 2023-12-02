@@ -8,19 +8,19 @@ export class GetSearch extends OpenAPIRoute {
 		parameters: {
 			query: Query(String, {
 				description: 'The query to search for',
-				default: 'cloudflare workers',
+				default: 'RepoMate',
 			}),
 		},
 		responses: {
 			200: {
-				description: "search results for the given query",
+				description: 'search results for the given query',
 				schema: {
 					repos: [
 						{
-							name: 'itty-router-openapi',
-							description: 'OpenAPI 3 schema generator and validator for Cloudflare Workers',
-							stars: '80',
-							url: 'https://github.com/cloudflare/itty-router-openapi',
+							name: 'RepoMate',
+							description: 'ChatGPT Plugin/Action that could search and access GitHub repositories.',
+							stars: 0,
+							url: 'https://github.com/Nativu5/RepoMate',
 						},
 					],
 				},
