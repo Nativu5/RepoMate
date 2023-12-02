@@ -15,7 +15,6 @@ export class GetContentSingle extends OpenAPIRoute {
 			branch: Query(String, {
 				description: 'branch name of the repository; blank for default',
 				required: false,
-				default: '',
 			}),
 			path: Query(String, {
 				description: 'path of the file',
@@ -32,8 +31,8 @@ export class GetContentSingle extends OpenAPIRoute {
 	};
 
 	async handle(request, env, ctx, data) {
-		const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/contents/${data.query.path}`;
-
+		const refQuery = data.query.branch ? '?ref=' + data.query.branch : '';
+		const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/contents/${data.query.path}${refQuery}`;
 		const resp = await fetch(url, {
 			headers: {
 				...WorkerHeaders,
@@ -67,7 +66,6 @@ export class GetContentBatch extends OpenAPIRoute {
 			branch: Query(String, {
 				description: 'branch name of the repository; blank for default',
 				required: false,
-				default: '',
 			}),
 			pathlist: Query(String, {
 				description: 'path list of the files(commas separated, e.g. `file1,file2`)',
@@ -94,11 +92,11 @@ export class GetContentBatch extends OpenAPIRoute {
 
 	async handle(request, env, ctx, data) {
 		const paths = data.query.pathlist.split(',');
-
 		const fileContents = [];
+		const refQuery = data.query.branch ? '?ref=' + data.query.branch : '';
 
 		for (const path of paths) {
-			const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/contents/${path}?ref=${data.query.branch}`;
+			const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/contents/${path}${refQuery}`;
 
 			const resp = await fetch(url, {
 				headers: {
