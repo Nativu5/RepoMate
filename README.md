@@ -1,14 +1,14 @@
 # RepoMate - ChatGPT Plugin for GitHub Repos
 
-RepoMate is a [ChatGPT](https://chat.openai.com/) Plugin/Action for accessing and searching GitHub Repostories.
+RepoMate is a [ChatGPT](https://chat.openai.com/) Plugin/Action for accessing and searching GitHub Repositories.
 
 ## Try it out
 
-You could try it out right with `repo-mate.api.naiv.fun` in a minute.
+You could try it out right [here](https://chat.openai.com/g/g-79oAnRCwm-repomate) (ChatGPT Plus required).
 
-Please read about [ChatGPT Action](https://platform.openai.com/docs/actions) (if on ChatGPT Plus) or [Assistants API](https://platform.openai.com/docs/assistants/tools/function-calling) (if using API), to utilize this online demo.
+If you don't have a ChatGPT Plus subscription, please read about [Assistants API](https://platform.openai.com/docs/assistants/tools/function-calling) and use `https://repo-mate.api.naiv.fun` as your Assistant API endpoint.
 
-## Get started
+## Deploy yourself
 
 0. Sign up for [Cloudflare Workers](https://workers.dev). The free tier is more than enough for most use cases.
 1. Install [wrangler](https://developers.cloudflare.com/workers/cli-wrangler/install-update), the Cloudflare Workers CLI.
