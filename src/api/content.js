@@ -95,7 +95,8 @@ export class GetContentBatch extends OpenAPIRoute {
 		const fileContents = [];
 		const refQuery = data.query.branch ? '?ref=' + data.query.branch : '';
 
-		for (const path of paths) {
+		for (let path of paths) {
+			path = path.trim();
 			const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/contents/${path}${refQuery}`;
 
 			const resp = await fetch(url, {
