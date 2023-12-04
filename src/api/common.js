@@ -1,22 +1,30 @@
+import { Octokit, RequestError } from 'octokit';
+
 export const WorkerHeaders = {
 	Accept: 'application/vnd.github.v3+json',
 	'User-Agent': 'RepoMate - ChatGPT Plugin',
 };
 
-export async function GetDefaultBranch(owner, repo) {
-	const url = `https://api.github.com/repos/${owner}/${repo}`;
-
-	const resp = await fetch(url, {
-		headers: {
-			...WorkerHeaders,
-		},
+export const GetOctokit = () =>
+	new Octokit({
+		// auth: process.env.GITHUB_TOKEN,
 	});
 
-	if (!resp.ok) {
-		return new Response(await resp.text(), { status: resp.status });
+export async function GetDefaultBranch(owner, repo) {
+	const octokit = GetOctokit();
+	try {
+		const resp = await octokit.rest.repos.get({
+			owner: owner,
+			repo: repo,
+		});
+
+		return resp.data.default_branch;
+	} catch (err) {
+		if (err instanceof RequestError) {
+			console.log(err);
+			return null;
+		} else {
+			throw err;
+		}
 	}
-
-	const json = await resp.json();
-
-	return json['default_branch'];
 }

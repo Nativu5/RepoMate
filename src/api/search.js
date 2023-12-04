@@ -1,4 +1,4 @@
-import { WorkerHeaders } from './common';
+import { GetOctokit } from './common';
 import { OpenAPIRoute, Query } from '@cloudflare/itty-router-openapi';
 
 export class GetSearch extends OpenAPIRoute {
@@ -29,29 +29,22 @@ export class GetSearch extends OpenAPIRoute {
 	};
 
 	async handle(request, env, ctx, data) {
-		const url = 'https://api.github.com/search/repositories?q=' + data.query.query;
+		try {
+			const resp = await GetOctokit().rest.search.repos({
+				q: data.query.query,
+			});
 
-		const resp = await fetch(url, {
-			headers: {
-				...WorkerHeaders,
-			},
-		});
-
-		if (!resp.ok) {
-			return new Response(await resp.text(), { status: 400 });
+			return {
+				repos: resp.data.items.map((item) => ({
+					name: item.name,
+					description: item.description,
+					stars: item.stargazers_count,
+					url: item.html_url,
+					topics: item.topics,
+				})),
+			};
+		} catch (err) {
+			return new Response(err.message, { status: err.status });
 		}
-
-		const json = await resp.json();
-
-		const repos = json.items.map((item) => ({
-			name: item.name,
-			description: item.description,
-			stars: item.stargazers_count,
-			url: item.html_url,
-		}));
-
-		return {
-			repos: repos,
-		};
 	}
 }

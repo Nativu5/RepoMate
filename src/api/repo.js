@@ -1,5 +1,5 @@
 import { OpenAPIRoute, Query } from '@cloudflare/itty-router-openapi';
-import { WorkerHeaders, GetDefaultBranch } from './common';
+import { GetDefaultBranch, GetOctokit } from './common';
 
 export class GetRepoTree extends OpenAPIRoute {
 	static schema = {
@@ -37,35 +37,24 @@ export class GetRepoTree extends OpenAPIRoute {
 	async handle(request, env, ctx, data) {
 		// Get the default branch name if not specified
 		if (!data.query.branch) {
-			let ret = await GetDefaultBranch(data.query.owner, data.query.repo);
-			if (ret instanceof Response) {
-				return ret;
+			const defaultBranch = await GetDefaultBranch(data.query.owner, data.query.repo);
+			if (!defaultBranch) {
+				return new Response('Failed to get the default branch', { status: 400 });
 			}
-			data.query.branch = ret;
+			data.query.branch = defaultBranch;
 		}
 
-		const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/git/trees/${data.query.branch}?recursive=true`;
-
-		const resp = await fetch(url, {
-			headers: {
-				...WorkerHeaders,
-			},
-		});
-
-		if (!resp.ok) {
-			return new Response(await resp.text(), { status: resp.status });
+		try {
+			const resp = await GetOctokit().request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
+				owner: data.query.owner,
+				repo: data.query.repo,
+				tree_sha: data.query.branch,
+				recursive: true,
+			});
+			return resp.data.tree.map(({ path, type }) => ({ path, type }));
+		} catch (err) {
+			return new Response(err.message, { status: err.status });
 		}
-
-		const json = await resp.json();
-
-		const repos = json['tree'].map((item) => ({
-			path: item.path,
-			type: item.type,
-		}));
-
-		return {
-			repos: repos,
-		};
 	}
 }
 
@@ -89,70 +78,41 @@ export class GetRepoMeta extends OpenAPIRoute {
 				schema: {
 					description: 'ChatGPT Plugin/Action that searches and accesses GitHub repositories. ',
 					default_branch: 'master',
-					archived: false,
-					disabled: false,
-					fork: false,
-					forks_count: 0,
-					open_issues_count: 0,
-					stargazers_count: 0,
-					watchers_count: 0,
 					size: 23,
 					topics: ['chatgpt', 'chatgpt-plugin', 'cloudflare-workers'],
-					license: {
-						key: 'apache-2.0',
-						name: 'Apache License 2.0',
-						spdx_id: 'Apache-2.0',
-						url: 'https://api.github.com/licenses/apache-2.0',
-						node_id: 'MDc6TGljZW5zZTI=',
-					},
-					pushed_at: '2023-12-02T16:02:38Z',
-					created_at: '2023-12-02T13:15:22Z',
-					updated_at: '2023-12-02T16:04:30Z',
 				},
 			},
 		},
 	};
 
 	async handle(request, env, ctx, data) {
-		// Get the default branch name if not specified
-		if (!data.query.branch) {
-			let ret = await GetDefaultBranch(data.query.owner, data.query.repo);
-			if (ret instanceof Response) {
-				return ret;
-			}
-			data.query.branch = ret;
+		const interested = [
+			'description',
+			'default_branch',
+			'archived',
+			'disabled',
+			'fork',
+			'forks_count',
+			'open_issues_count',
+			'stargazers_count',
+			'watchers_count',
+			'size',
+			'topics',
+			'license',
+			'pushed_at',
+			'created_at',
+			'updated_at',
+		];
+
+		try {
+			const resp = await GetOctokit().rest.repos.get({
+				owner: data.query.owner,
+				repo: data.query.repo,
+			});
+
+			return Object.fromEntries(Object.entries(resp.data).filter(([key]) => interested.includes(key)));
+		} catch (err) {
+			return new Response(err.message, { status: err.status });
 		}
-
-		const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}`;
-
-		const resp = await fetch(url, {
-			headers: {
-				...WorkerHeaders,
-			},
-		});
-
-		if (!resp.ok) {
-			return new Response(await resp.text(), { status: resp.status });
-		}
-
-		const json = await resp.json();
-
-		return {
-			description: json.description,
-			default_branch: json.default_branch,
-			archived: json.archived,
-			disabled: json.disabled,
-			fork: json.fork,
-			forks_count: json.forks_count,
-			open_issues_count: json.open_issues_count,
-			stargazers_count: json.stargazers_count,
-			watchers_count: json.watchers_count,
-			size: json.size,
-			topics: json.topics,
-			license: json.license,
-			pushed_at: json.pushed_at,
-			created_at: json.created_at,
-			updated_at: json.updated_at,
-		};
 	}
 }

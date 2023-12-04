@@ -1,5 +1,5 @@
 import { OpenAPIRoute, Query } from '@cloudflare/itty-router-openapi';
-import { WorkerHeaders } from './common';
+import { GetOctokit } from './common';
 
 export class GetContentSingle extends OpenAPIRoute {
 	static schema = {
@@ -31,24 +31,24 @@ export class GetContentSingle extends OpenAPIRoute {
 	};
 
 	async handle(request, env, ctx, data) {
-		const refQuery = data.query.branch ? '?ref=' + data.query.branch : '';
-		const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/contents/${data.query.path}${refQuery}`;
-		const resp = await fetch(url, {
-			headers: {
-				...WorkerHeaders,
-				Accept: 'application/vnd.github.raw',
-			},
-		});
+		try {
+			const resp = await GetOctokit().rest.repos.getContent({
+				owner: data.query.owner,
+				repo: data.query.repo,
+				path: data.query.path,
+				ref: data.query.branch,
+				mediaType: {
+					format: 'raw',
+				},
+			});
 
-		if (!resp.ok) {
-			return new Response(await resp.text(), { status: resp.status });
+			// TODO: Add support for folders.
+			return {
+				content: resp.data,
+			};
+		} catch (err) {
+			return new Response(err.message, { status: err.status });
 		}
-
-		const raw = await resp.text();
-
-		return {
-			content: raw,
-		};
 	}
 }
 
@@ -73,7 +73,7 @@ export class GetContentBatch extends OpenAPIRoute {
 		},
 		responses: {
 			200: {
-				description: 'file contents for the given paths',
+				description: 'file contents. `[ERR]` begined string means failure in retrieving. ',
 				schema: {
 					contents: [
 						{
@@ -93,29 +93,31 @@ export class GetContentBatch extends OpenAPIRoute {
 	async handle(request, env, ctx, data) {
 		const paths = data.query.pathlist.split(',');
 		const fileContents = [];
-		const refQuery = data.query.branch ? '?ref=' + data.query.branch : '';
 
 		for (let path of paths) {
 			path = path.trim();
-			const url = `https://api.github.com/repos/${data.query.owner}/${data.query.repo}/contents/${path}${refQuery}`;
 
-			const resp = await fetch(url, {
-				headers: {
-					...WorkerHeaders,
-					Accept: 'application/vnd.github.raw',
-				},
-			});
+			try {
+				const resp = await GetOctokit().rest.repos.getContent({
+					owner: data.query.owner,
+					repo: data.query.repo,
+					path: path,
+					ref: data.query.branch,
+					mediaType: {
+						format: 'raw',
+					},
+				});
 
-			if (!resp.ok) {
-				return new Response(await resp.text(), { status: resp.status });
+				fileContents.push({
+					path: path,
+					content: resp.data,
+				});
+			} catch (err) {
+				fileContents.push({
+					path: path,
+					content: `[ERR] ${err.message} (${err.status})`,
+				});
 			}
-
-			const raw = await resp.text();
-
-			fileContents.push({
-				path: path,
-				content: raw,
-			});
 		}
 
 		return {

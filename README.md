@@ -18,12 +18,12 @@ If you don't have a ChatGPT Plus subscription, please read about [Assistants API
 
 ## Features
 
-* Search repositories
-* Fetch repository metadata
-* Fetch the tree structure of the repository
-* Fetch content of files in the repository
+- Search repositories
+- Fetch repository metadata
+- Fetch the tree structure of the repository
+- Fetch content of files in the repository
 
 **TODO:**
-* Replace `fetch` with [Octokit.js](https://github.com/octokit/octokit.js/#readme).
-* Add support for shipping with GitHub Personal Token.
-* Add optional authentication.
+- [x] Replace `fetch` with [Octokit.js](https://github.com/octokit/octokit.js/#readme).
+- [ ] Add support for shipping with GitHub Personal Token.
+- [ ] Add optional authentication.
