@@ -1,13 +1,9 @@
 import { Octokit, RequestError } from 'octokit';
 
-export const WorkerHeaders = {
-	Accept: 'application/vnd.github.v3+json',
-	'User-Agent': 'RepoMate - ChatGPT Plugin',
-};
-
-export const GetOctokit = () =>
+export const GetOctokit = (env) =>
 	new Octokit({
-		// auth: process.env.GITHUB_TOKEN,
+		userAgent: 'RepoMate - ChatGPT Plugin',
+		auth: env.GITHUB_TOKEN,
 	});
 
 export async function GetDefaultBranch(owner, repo) {

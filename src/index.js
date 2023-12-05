@@ -11,6 +11,7 @@ export const router = OpenAPIRouter({
 			description: 'A plugin that allows the user to access GitHub repositories using ChatGPT',
 			version: 'v0.0.1',
 		},
+		servers: [{ url: 'https://repo-mate.api.naiv.fun' }],
 	},
 	docs_url: '/',
 	aiPlugin: {
