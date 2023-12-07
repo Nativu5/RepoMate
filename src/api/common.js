@@ -6,8 +6,8 @@ export const GetOctokit = (env) =>
 		auth: env.GITHUB_TOKEN,
 	});
 
-export async function GetDefaultBranch(owner, repo) {
-	const octokit = GetOctokit();
+export async function GetDefaultBranch(env, owner, repo) {
+	const octokit = GetOctokit(env);
 	try {
 		const resp = await octokit.rest.repos.get({
 			owner: owner,

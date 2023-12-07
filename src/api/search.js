@@ -30,7 +30,7 @@ export class GetSearch extends OpenAPIRoute {
 
 	async handle(request, env, ctx, data) {
 		try {
-			const resp = await GetOctokit().rest.search.repos({
+			const resp = await GetOctokit(env).rest.search.repos({
 				q: data.query.query,
 			});
 

@@ -37,7 +37,7 @@ export class GetRepoTree extends OpenAPIRoute {
 	async handle(request, env, ctx, data) {
 		// Get the default branch name if not specified
 		if (!data.query.branch) {
-			const defaultBranch = await GetDefaultBranch(data.query.owner, data.query.repo);
+			const defaultBranch = await GetDefaultBranch(env, data.query.owner, data.query.repo);
 			if (!defaultBranch) {
 				return new Response('Failed to get the default branch', { status: 400 });
 			}
@@ -45,7 +45,7 @@ export class GetRepoTree extends OpenAPIRoute {
 		}
 
 		try {
-			const resp = await GetOctokit().request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
+			const resp = await GetOctokit(env).request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
 				owner: data.query.owner,
 				repo: data.query.repo,
 				tree_sha: data.query.branch,
@@ -105,7 +105,7 @@ export class GetRepoMeta extends OpenAPIRoute {
 		];
 
 		try {
-			const resp = await GetOctokit().rest.repos.get({
+			const resp = await GetOctokit(env).rest.repos.get({
 				owner: data.query.owner,
 				repo: data.query.repo,
 			});

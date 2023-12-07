@@ -32,7 +32,7 @@ export class GetContentSingle extends OpenAPIRoute {
 
 	async handle(request, env, ctx, data) {
 		try {
-			const resp = await GetOctokit().rest.repos.getContent({
+			const resp = await GetOctokit(env).rest.repos.getContent({
 				owner: data.query.owner,
 				repo: data.query.repo,
 				path: data.query.path,
@@ -98,7 +98,7 @@ export class GetContentBatch extends OpenAPIRoute {
 			path = path.trim();
 
 			try {
-				const resp = await GetOctokit().rest.repos.getContent({
+				const resp = await GetOctokit(env).rest.repos.getContent({
 					owner: data.query.owner,
 					repo: data.query.repo,
 					path: path,
