@@ -10,7 +10,7 @@ export const router = OpenAPIRouter({
 		info: {
 			title: 'RepoMate API',
 			description: 'A plugin that allows the user to access GitHub repositories using ChatGPT',
-			version: 'v0.0.1',
+			version: 'v1.0.1',
 		},
 		servers: [
 			{
