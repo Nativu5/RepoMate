@@ -5,6 +5,7 @@ import { GetContentSingle, GetContentBatch } from './api/content.js';
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi';
 
 export const router = OpenAPIRouter({
+	openapiVersion: "3",
 	schema: {
 		info: {
 			title: 'RepoMate API',
@@ -18,24 +19,25 @@ export const router = OpenAPIRouter({
 			},
 			{
 				url: 'http://localhost:8787',
-				description: 'Test Only',
+				description: 'Testing',
 			},
 		],
 	},
 	docs_url: '/',
+	openapi_url: '/.well-known/openapi.json',
 	aiPlugin: {
 		name_for_human: 'RepoMate',
 		name_for_model: 'github_repository_access',
 		description_for_human: 'GitHub Repositories Search & Access plugin for ChatGPT.',
 		description_for_model:
-			'GitHub Repositories Search & Access Plugin for ChatGPT. You can use this plugin to search and access GitHub repositories, including their READMEs, project structures and so on.',
+			'You can use this plugin to access GitHub repositories, including READMEs, project structures and so on.',
 		contact_email: 'root@naiv.fun',
 		legal_info_url: 'https://github.com/Nativu5/RepoMate/blob/master/LICENSE',
 		logo_url: 'https://workers.cloudflare.com/resources/logo/logo.svg',
 	},
 });
 
-// Define routes
+// Define routes for API
 router.get('/api/tree', GetRepoTree);
 router.get('/api/meta', GetRepoMeta);
 router.get('/api/search', GetSearch);
